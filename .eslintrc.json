@@ -3,12 +3,14 @@
     "env": {
       "commonjs": true,
       "es2021": true,
-      "node": true
+      "node": true,
+      "browser": true
     },
     "extends": [
       "eslint:recommended",
       "plugin:prettier/recommended",
-      "eslint-config-prettier"
+      "eslint-config-prettier",
+      "plugin:socket-io/recommended"
     ],
     "overrides": [],
     "parserOptions": {
@@ -20,6 +22,7 @@
         { "endOfline": "semicolon" },
         { "usePrettierrc": true }
       ]
-    }
+    },
+    " complementos " : [ " socket-io " ] 
   }
   
