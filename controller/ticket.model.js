@@ -3,7 +3,6 @@ const path = require('path');
 
 //Para poder grabar información
 const fs = require('fs');
-const { log } = require('console');
 
 //Controlador del ticket
 const ticketControl = () => {
@@ -31,31 +30,42 @@ const ticketControl = () => {
   const guardarenDB = () => {
     //Ruta donde esta la DB
     const dbPath = path.join(__dirname, '../db/data.json');
-    console.log(JSON.stringify(toJson()));
+
     //Convertimos el objeto a JSON y lo escribimos en la DB
     fs.writeFileSync(dbPath, JSON.stringify(toJson()));
   };
 
-  // Leemos base de datos
   const init = () => {
-    const {
-      ultimo: ultimoguardado,
-      hoy: diaHoy,
-      tickets: allTickets,
-      ultimos4: lastTickets,
-    } = require('../db/data.json');
+    //Leemos la DB
+    fs.readFile('data.json', (error, data) => {
+      if (error) {
+        return error;
+      } else {
+        //Destructuramos
+        const {
+          ultimo: ultimoguardado,
+          hoy: diaHoy,
+          tickets: allTickets,
+          ultimos4: lastTickets,
+        } = data;
 
-    //Si el día de hoy esta en la DB es que estamos trabajando en el dia adecuado
-    //Actualizamos el servidor el servidor
-    if (diaHoy === hoy) {
-      tickets.push(...allTickets);
-      ultimo = ultimoguardado;
-      ultimos4.push(...lastTickets);
-
-      // Sino es que ha empezado un día nuevo y deberá guardarse en la DB haciendo un formateo
-    } else {
-      guardarenDB();
-    }
+        //Si el día de hoy esta en la DB es que estamos trabajando en el dia adecuado
+        //Actualizamos el servidor el servidor
+        if (diaHoy) {
+          if (diaHoy === hoy) {
+            ultimo = ultimoguardado;
+            tickets.push(...allTickets);
+            ultimos4.push(...lastTickets);
+          } else {
+            // Sino es que ha empezado un día nuevo y deberá guardarse en la DB haciendo un formateo
+            guardarenDB();
+          }
+        } else {
+          //Sino existe el día Guardamos en la DB ya que esta vacía
+          guardarenDB();
+        }
+      }
+    });
   };
 
   //Generamos un nuevo ticket
@@ -63,9 +73,10 @@ const ticketControl = () => {
     //LLamamos a init para recuperar los datos
     init();
     ultimo++;
+
     //Creamos un nuevo ticket
     const newTicket = ticket(ultimo, null);
-    console.log(newTicket);
+
     //Añadimos el ticket al array de tickets
     tickets.push(newTicket);
 
