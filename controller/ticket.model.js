@@ -12,6 +12,7 @@ const ticketControl = () => {
   let tickets = [];
   let ultimos4 = [];
 
+  const dbPath = path.join(__dirname, '../db/data.json');
   //Creamos un ticket
   const ticket = (numero, escritorio) => {
     return { numero, escritorio };
@@ -20,63 +21,62 @@ const ticketControl = () => {
   //Devolvemos el objeto
   const toJson = () => {
     return {
-      ultimo,
-      hoy,
-      tickets,
-      ultimos4,
+      ultimoguardado: ultimo,
+      diaHoy: hoy,
+      allTickets: tickets,
+      lastTickets: ultimos4,
     };
   };
 
   const guardarenDB = () => {
     //Ruta donde esta la DB
-    const dbPath = path.join(__dirname, '../db/data.json');
-
     //Convertimos el objeto a JSON y lo escribimos en la DB
     fs.writeFileSync(dbPath, JSON.stringify(toJson()));
   };
 
+  //Función iniciadora que trae los datos
   const init = () => {
-    //Leemos la DB
-    fs.readFile('data.json', (error, data) => {
-      if (error) {
-        return error;
-      } else {
-        //Destructuramos
-        const {
-          ultimo: ultimoguardado,
-          hoy: diaHoy,
-          tickets: allTickets,
-          ultimos4: lastTickets,
-        } = data;
-
-        //Si el día de hoy esta en la DB es que estamos trabajando en el dia adecuado
-        //Actualizamos el servidor el servidor
-        if (diaHoy) {
-          if (diaHoy === hoy) {
+    //Debemos hacer una promesa asi la funciñon que la ejecuta será asyncrona
+    // y no continuará hasta tener la respuesta de esta función
+    return new Promise((resolve, reject) => {
+      fs.readFile(dbPath, 'utf8', (err, data) => {
+        if (err) {
+          console.log(err);
+          return err;
+        } else {
+          //Parseamos la respuesta
+          const dataParser = JSON.parse(data);
+          //Destructuring
+          const { ultimoguardado, diaHoy, allTickets, lastTickets } =
+            dataParser;
+          console.log('init ultimos', ultimo, ultimoguardado);
+          //Comparamos el día traido de la DB con el día de hoy
+          if (hoy === diaHoy) {
             ultimo = ultimoguardado;
             tickets.push(...allTickets);
             ultimos4.push(...lastTickets);
           } else {
+            ultimo = 0;
+            hoy = new Date().getDate();
+            tickets = [];
+            ultimos4 = [];
             // Sino es que ha empezado un día nuevo y deberá guardarse en la DB haciendo un formateo
             guardarenDB();
           }
-        } else {
-          //Sino existe el día Guardamos en la DB ya que esta vacía
-          ultimo = 0;
-          hoy = new Date().getDate();
-          tickets = [];
-          ultimos4 = [];
-          guardarenDB();
+          resolve();
         }
-      }
+      });
     });
+    //Leemos la DB
   };
 
   //Generamos un nuevo ticket
-  const siguiente = () => {
+  //Hacemos la funciñon asyncrona para esperar que init se resuelva y continuar
+  const siguiente = async () => {
     //LLamamos a init para recuperar los datos
-    init();
+    await init();
     ultimo++;
+    console.log('ultimo + 1', ultimo);
 
     //Creamos un nuevo ticket
     const newTicket = ticket(ultimo, null);
@@ -123,6 +123,7 @@ const ticketControl = () => {
     init,
     siguiente,
     atenderTicket,
+    guardarenDB,
   };
 };
 

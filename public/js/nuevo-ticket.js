@@ -14,6 +14,7 @@ socket.on('disconnect', () => {
 crearTicket.addEventListener('click', () => {
   //Emitimos el siguiente ticket
   socket.emit('siguiente-ticket', null, (ticket) => {
+    console.log(ticket);
     //Pintamos el ticket recibo por la callback del controller
     etiquetaTicket.innerText = ticket;
   });
