@@ -11,7 +11,7 @@ const socketController = (cliente) => {
     //LLamamos a la función siguiente que genera nuevo ticket
     const siguienteTicket = ticketController.siguiente();
 
-    //Devolvemos el ticket en la callback
+    //Devolvemos el ticket en la callback para que lo reciba el front
     callback(siguienteTicket);
 
     //Notificar que hay nuevo ticket pendiente de asignar

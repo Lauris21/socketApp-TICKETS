@@ -1,4 +1,4 @@
-//Para contruir el path
+//Para construir el path
 const path = require('path');
 
 //Para poder grabar información
@@ -62,6 +62,10 @@ const ticketControl = () => {
           }
         } else {
           //Sino existe el día Guardamos en la DB ya que esta vacía
+          ultimo = 0;
+          hoy = new Date().getDate();
+          tickets = [];
+          ultimos4 = [];
           guardarenDB();
         }
       }

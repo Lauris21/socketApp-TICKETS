@@ -1,4 +1,4 @@
-const etiquetaTicket = document.querySelector('lblNuevoTicket');
+const etiquetaTicket = document.getElementById('lblNuevoTicket');
 const crearTicket = document.querySelector('button');
 
 const socket = io();
@@ -13,7 +13,8 @@ socket.on('disconnect', () => {
 
 crearTicket.addEventListener('click', () => {
   //Emitimos el siguiente ticket
-  socket.emit('siguiente-ticket', null, (ticket) =>
-    console.log('En front ticket', ticket)
-  );
+  socket.emit('siguiente-ticket', null, (ticket) => {
+    //Pintamos el ticket recibo por la callback del controller
+    etiquetaTicket.innerText = ticket;
+  });
 });
