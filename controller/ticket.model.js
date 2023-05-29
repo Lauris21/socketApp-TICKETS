@@ -13,6 +13,7 @@ const ticketControl = () => {
   let ultimos4 = [];
 
   const dbPath = path.join(__dirname, '../db/data.json');
+
   //Creamos un ticket
   const ticket = (numero, escritorio) => {
     return { numero, escritorio };
@@ -53,7 +54,9 @@ const ticketControl = () => {
           //Comparamos el día traido de la DB con el día de hoy
           if (hoy === diaHoy) {
             ultimo = ultimoguardado;
+            console.log('antes push', tickets);
             tickets.push(...allTickets);
+            console.log('despues', tickets);
             ultimos4.push(...lastTickets);
           } else {
             ultimo = 0;
@@ -76,17 +79,13 @@ const ticketControl = () => {
     //LLamamos a init para recuperar los datos
     await init();
     ultimo++;
-    console.log('ultimo + 1', ultimo);
-
     //Creamos un nuevo ticket
     const newTicket = ticket(ultimo, null);
-
     //Añadimos el ticket al array de tickets
     tickets.push(newTicket);
-
+    console.log('antes guardar', tickets);
     //Guardamos los cambios en DB
     guardarenDB();
-
     //Devolvemos el número del ticket
     return `Ticket ${newTicket.numero}`;
   };
@@ -99,22 +98,17 @@ const ticketControl = () => {
     }
     //Cogemos primer ticket
     const ticket = tickets.shift();
-
     //Igualamos el escritorio del ticket al escritorio que hemos recibido por argumento
     ticket.escritorio = escritorio;
-
     //Lo añadimos al inicio del array de últimos4
     ultimos4.unshift(ticket);
-
     //Comprobamos que el array sea mayor que 4 para borrar el último
     if (ultimos4.length > 4) {
       //Eliminiamos el último
       ultimos4.splice(-1, 1);
     }
-
     //Guardamos en la DB
     guardarenDB();
-
     //Devolveos el ticket que atendemos
     return ticket;
   };
