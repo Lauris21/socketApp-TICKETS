@@ -13,10 +13,15 @@ if (!searchParams.has('escritorio')) {
 const escritorio = searchParams.get('escritorio');
 
 //HTML REFERENCES
-
 const h1 = document.querySelector('h1');
 const btnAtender = document.querySelector('button');
+const etiquetaTicket = document.querySelector('small');
+const divAlerta = document.querySelector('.alert');
 
+//Ocultamos el div de alerta
+divAlerta.style.display = 'none';
+
+//Conectar con socket
 const socket = io();
 
 socket.on('connect', () => {
@@ -31,9 +36,15 @@ socket.on('disconnect', () => {
 
 btnAtender.addEventListener('click', () => {
   //Emitimos 'solicitar-ticket' pasando el escritorio y recibiendo por callback el objeto
-  console.log(escritorio);
   socket.emit('solicitar-ticket', { escritorio }, ({ ok, ticket, msg }) => {
-    //Pintamos el ticket recibo por la callback del controller
     console.log(ok, ticket, msg);
+    //Si respuesta no es ok
+    if (!ok) {
+      etiquetaTicket.innerText = 'Nadie';
+      //Mostramos el div de alerta
+      return (divAlerta.style.display = '');
+    }
+    //Pintamos el ticket recibo por la callback del controller
+    etiquetaTicket.innerText = `Ticket ${ticket.numero}`;
   });
 });

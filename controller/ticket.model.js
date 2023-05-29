@@ -57,8 +57,6 @@ const ticketControl = () => {
       //Comparamos el día traido de la DB con el día de hoy
       if (hoy === diaHoy) {
         ultimo = ultimoguardado;
-        // tickets.push(...allTickets);
-        console.log('despues', tickets);
         ultimos4.push(...lastTickets);
       } else {
         ultimo = 0;
@@ -107,6 +105,7 @@ const ticketControl = () => {
       lastTickets.unshift(ticket);
       //Comprobamos que el array sea mayor que 4 para borrar el último
       if (lastTickets.length > 4) {
+        console.log('mas de 4', lastTickets);
         //Eliminiamos el último
         lastTickets.splice(-1, 1);
       }

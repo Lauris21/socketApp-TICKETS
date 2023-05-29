@@ -1,27 +1,22 @@
 {
-    "ultimoguardado": 6,
+    "ultimoguardado": 13,
     "diaHoy": 29,
-    "allTickets": [
-        {
-            "numero": 6,
-            "escritorio": null
-        }
-    ],
+    "allTickets": [],
     "lastTickets": [
         {
-            "numero": 5,
+            "numero": 13,
             "escritorio": "2"
         },
         {
-            "numero": 4,
+            "numero": 12,
             "escritorio": "2"
         },
         {
-            "numero": 3,
+            "numero": 11,
             "escritorio": "2"
         },
         {
-            "numero": 2,
+            "numero": 10,
             "escritorio": "2"
         }
     ]
