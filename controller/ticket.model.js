@@ -57,7 +57,7 @@ const ticketControl = () => {
       //Comparamos el día traido de la DB con el día de hoy
       if (hoy === diaHoy) {
         ultimo = ultimoguardado;
-        ultimos4.push(...lastTickets);
+        ultimos4 = lastTickets;
       } else {
         ultimo = 0;
         hoy = new Date().getDate();
