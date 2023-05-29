@@ -35,42 +35,42 @@ const ticketControl = () => {
     fs.writeFileSync(dbPath, JSON.stringify(toJson()));
   };
 
-  //Función iniciadora que trae los datos
-  const init = () => {
-    //Debemos hacer una promesa asi la funciñon que la ejecuta será asyncrona
-    // y no continuará hasta tener la respuesta de esta función
+  //Leer DB
+  const getData = (url) => {
     return new Promise((resolve, reject) => {
-      fs.readFile(dbPath, 'utf8', (err, data) => {
-        if (err) {
-          console.log(err);
-          return err;
+      fs.readFile(url, 'utf8', (error, data) => {
+        if (error) {
+          reject(error);
         } else {
-          //Parseamos la respuesta
-          const dataParser = JSON.parse(data);
-          //Destructuring
           const { ultimoguardado, diaHoy, allTickets, lastTickets } =
-            dataParser;
-          console.log('init ultimos', ultimo, ultimoguardado);
-          //Comparamos el día traido de la DB con el día de hoy
-          if (hoy === diaHoy) {
-            ultimo = ultimoguardado;
-            console.log('antes push', tickets);
-            tickets.push(...allTickets);
-            console.log('despues', tickets);
-            ultimos4.push(...lastTickets);
-          } else {
-            ultimo = 0;
-            hoy = new Date().getDate();
-            tickets = [];
-            ultimos4 = [];
-            // Sino es que ha empezado un día nuevo y deberá guardarse en la DB haciendo un formateo
-            guardarenDB();
-          }
-          resolve();
+            JSON.parse(data);
+          resolve({ ultimoguardado, diaHoy, allTickets, lastTickets });
         }
       });
     });
-    //Leemos la DB
+  };
+
+  //Función iniciadora que trae los datos
+  const init = async () => {
+    try {
+      const { ultimoguardado, diaHoy, lastTickets } = await getData(dbPath);
+      //Comparamos el día traido de la DB con el día de hoy
+      if (hoy === diaHoy) {
+        ultimo = ultimoguardado;
+        // tickets.push(...allTickets);
+        console.log('despues', tickets);
+        ultimos4.push(...lastTickets);
+      } else {
+        ultimo = 0;
+        hoy = new Date().getDate();
+        tickets = [];
+        ultimos4 = [];
+        // Sino es que ha empezado un día nuevo y deberá guardarse en la DB haciendo un formateo
+        guardarenDB();
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   //Generamos un nuevo ticket
@@ -83,7 +83,6 @@ const ticketControl = () => {
     const newTicket = ticket(ultimo, null);
     //Añadimos el ticket al array de tickets
     tickets.push(newTicket);
-    console.log('antes guardar', tickets);
     //Guardamos los cambios en DB
     guardarenDB();
     //Devolvemos el número del ticket
@@ -91,26 +90,36 @@ const ticketControl = () => {
   };
 
   //Quién atenderá los tickets
-  const atenderTicket = (escritorio) => {
-    //No tenemos tickets
-    if (tickets.length === 0) {
-      return null;
+  const atenderTicket = async (escritorio) => {
+    try {
+      const { ultimoguardado, diaHoy, allTickets, lastTickets } = await getData(
+        dbPath
+      );
+      //No tenemos tickets
+      if (allTickets.length === 0) {
+        return null;
+      }
+      //Cogemos primer ticket
+      const ticket = allTickets.shift();
+      //Igualamos el escritorio del ticket al escritorio que hemos recibido por argumento
+      ticket.escritorio = escritorio;
+      //Lo añadimos al inicio del array de últimos4
+      lastTickets.unshift(ticket);
+      //Comprobamos que el array sea mayor que 4 para borrar el último
+      if (lastTickets.length > 4) {
+        //Eliminiamos el último
+        lastTickets.splice(-1, 1);
+      }
+      //Guardamos en la DB
+      ultimo = ultimoguardado;
+      tickets = allTickets;
+      ultimos4 = lastTickets;
+      guardarenDB();
+      //Devolveos el ticket que atendemos
+      return ticket;
+    } catch (error) {
+      throw new Error(error);
     }
-    //Cogemos primer ticket
-    const ticket = tickets.shift();
-    //Igualamos el escritorio del ticket al escritorio que hemos recibido por argumento
-    ticket.escritorio = escritorio;
-    //Lo añadimos al inicio del array de últimos4
-    ultimos4.unshift(ticket);
-    //Comprobamos que el array sea mayor que 4 para borrar el último
-    if (ultimos4.length > 4) {
-      //Eliminiamos el último
-      ultimos4.splice(-1, 1);
-    }
-    //Guardamos en la DB
-    guardarenDB();
-    //Devolveos el ticket que atendemos
-    return ticket;
   };
 
   return {

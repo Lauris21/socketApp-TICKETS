@@ -32,7 +32,8 @@ socket.on('disconnect', () => {
 btnAtender.addEventListener('click', () => {
   //Emitimos 'solicitar-ticket' pasando el escritorio y recibiendo por callback el objeto
   console.log(escritorio);
-  socket.emit('solicitar-ticket', { escritorio }, (callback) => {
+  socket.emit('solicitar-ticket', { escritorio }, ({ ok, ticket, msg }) => {
     //Pintamos el ticket recibo por la callback del controller
+    console.log(ok, ticket, msg);
   });
 });

@@ -7,15 +7,27 @@ const socketController = async (cliente) => {
   cliente.on('disconnect', () => {});
 
   //Escuchamos la emision 'solicitar-ticket' recibimos el escritorio, devolvemos mediante callback un objeto
-  cliente.on('solicitar-ticket', ({ escritorio }, callback) => {
-    console.log(escritorio);
+  cliente.on('solicitar-ticket', async ({ escritorio }, callback) => {
     if (!escritorio) {
       return callback({
         ok: false,
         msg: 'El escritorio es obligatorio',
       });
     }
-    // const ticket = ticketController.atenderTicket(escritorio);
+    const ticket = await ticketController.atenderTicket(escritorio);
+    console.log(ticket);
+    //Cuando no haya más tickets que atender ticket = null
+    if (!ticket) {
+      callback({
+        ok: false,
+        msg: 'Ya no hay tickets pendientes',
+      });
+    } else {
+      callback({
+        ok: true,
+        ticket,
+      });
+    }
   });
 
   //Escuchamos la emision de 'siguiente-ticket' que emite el front
