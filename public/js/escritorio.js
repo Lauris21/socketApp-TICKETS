@@ -17,6 +17,7 @@ const h1 = document.querySelector('h1');
 const btnAtender = document.querySelector('button');
 const etiquetaTicket = document.querySelector('small');
 const divAlerta = document.querySelector('.alert');
+const ticketsPendientes = document.getElementById('lblPendientes');
 
 //Ocultamos el div de alerta
 divAlerta.style.display = 'none';
@@ -34,10 +35,15 @@ socket.on('disconnect', () => {
   btnAtender.disabled = true;
 });
 
+//Escuchamos los tickets-pendientes que nos devuelve la longitud de todos los tickets
+socket.on('tickets-pendientes', (ticketsPorAtender) => {
+  ticketsPendientes.innerText = ticketsPorAtender;
+});
+
+//Evento del botón
 btnAtender.addEventListener('click', () => {
   //Emitimos 'solicitar-ticket' pasando el escritorio y recibiendo por callback el objeto
   socket.emit('solicitar-ticket', { escritorio }, ({ ok, ticket, msg }) => {
-    console.log(ok, ticket, msg);
     //Si respuesta no es ok
     if (!ok) {
       //Ya no hay más tickets

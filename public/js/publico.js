@@ -19,19 +19,31 @@ socket.on('disconnect', () => {});
 
 //Escuchamos los ultimos 4
 socket.on('ultimos-ticket', (payload) => {
-  console.log(payload);
   //Traemos los ultimos tickets
   const [ticket1, ticket2, ticket3, ticket4] = payload;
-  //Renderizamos
-  etiquetaTicket1.innerText = `Ticket ${ticket1.numero}`;
-  etiquetaEscritorio1.innerText = `Ticket ${ticket1.escritorio}`;
+  //Comprobamos que existan y pintamos
+  if (ticket1) {
+    etiquetaTicket1.innerText = `Ticket ${ticket1.numero}`;
+    etiquetaEscritorio1.innerText = `Escritorio ${ticket1.escritorio}`;
+  }
 
-  etiquetaTicket2.innerText = `Ticket ${ticket2.numero}`;
-  etiquetaEscritorio2.innerText = `Ticket ${ticket2.escritorio}`;
+  if (ticket2) {
+    etiquetaTicket2.innerText = `Ticket ${ticket2.numero}`;
+    etiquetaEscritorio2.innerText = `Escritorio ${ticket2.escritorio}`;
+  }
 
-  etiquetaTicket3.innerText = `Ticket ${ticket3.numero}`;
-  etiquetaEscritorio3.innerText = `Ticket ${ticket3.escritorio}`;
+  if (ticket3) {
+    etiquetaTicket3.innerText = `Ticket ${ticket3.numero}`;
+    etiquetaEscritorio3.innerText = `Escritorio ${ticket3.escritorio}`;
+  }
 
-  etiquetaTicket4.innerText = `Ticket ${ticket4.numero}`;
-  etiquetaEscritorio4.innerText = `Ticket ${ticket4.escritorio}`;
+  if (ticket4) {
+    etiquetaTicket4.innerText = `Ticket ${ticket4.numero}`;
+    etiquetaEscritorio4.innerText = `Escritorio ${ticket4.escritorio}`;
+  }
+});
+
+//Escuchamos los tickets-pendientes que nos devuelve la longitud de todos los tickets
+socket.on('tickets-pendientes', (payload) => {
+  console.log(payload);
 });

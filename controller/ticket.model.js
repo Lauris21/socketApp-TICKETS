@@ -54,11 +54,14 @@ const ticketControl = () => {
   const init = async () => {
     try {
       //LLamamos a la función que nos trae la data y hacemos destructuring
-      const { ultimoguardado, diaHoy, lastTickets } = await getData(dbPath);
+      const { ultimoguardado, diaHoy, lastTickets, allTickets } = await getData(
+        dbPath
+      );
       //Comparamos el día traido de la DB con el día de hoy
       if (hoy === diaHoy) {
         ultimo = ultimoguardado;
         ultimos4 = lastTickets;
+        tickets = allTickets;
       } else {
         ultimo = 0;
         hoy = new Date().getDate();
@@ -84,8 +87,15 @@ const ticketControl = () => {
     tickets.push(newTicket);
     //Guardamos los cambios en DB
     guardarenDB();
+
+    const res = {
+      ticket: `Ticket ${newTicket.numero}`,
+      ultimo,
+      tickets,
+      ultimos4,
+    };
     //Devolvemos el número del ticket
-    return `Ticket ${newTicket.numero}`;
+    return res;
   };
 
   //Quién atenderá los tickets -> Sacaremos el ticket más antiguo de allTickets y lo introduciremos el primero de lastTickets
@@ -94,7 +104,7 @@ const ticketControl = () => {
       const { ultimoguardado, allTickets, lastTickets } = await getData(dbPath);
       //No tenemos tickets
       if (allTickets.length === 0) {
-        return null;
+        return { ticket: null, ultimoguardado, lastTickets, allTickets };
       }
       //Cogemos primer ticket
       const ticket = allTickets.shift();
@@ -104,17 +114,19 @@ const ticketControl = () => {
       lastTickets.unshift(ticket);
       //Comprobamos que el array sea mayor que 4 para borrar el último
       if (lastTickets.length > 4) {
-        console.log('mas de 4', lastTickets);
         //Eliminiamos el último
         lastTickets.splice(-1, 1);
       }
-      //Guardamos en la DB
+      //Actualizamos variables
       ultimo = ultimoguardado;
       tickets = allTickets;
       ultimos4 = lastTickets;
+      //Guardamos en la DB
       guardarenDB();
-      //Devolveos el ticket que atendemos
-      return ticket;
+
+      const respuesta = { ticket, ultimoguardado, lastTickets, allTickets };
+      //Devolvemos la respuesta con los datos actualizados
+      return respuesta;
     } catch (error) {
       throw new Error(error);
     }
