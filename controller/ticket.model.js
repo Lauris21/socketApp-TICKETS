@@ -35,8 +35,8 @@ const ticketControl = () => {
     fs.writeFileSync(dbPath, JSON.stringify(toJson()));
   };
 
-  //Leer DB
-  const getData = (url) => {
+  //Leer DB hacemos una promesa para que al ejecutar la función espere a ver si se ha resuelto
+  const getData = (url = dbPath) => {
     return new Promise((resolve, reject) => {
       fs.readFile(url, 'utf8', (error, data) => {
         if (error) {
@@ -53,6 +53,7 @@ const ticketControl = () => {
   //Función iniciadora que trae los datos
   const init = async () => {
     try {
+      //LLamamos a la función que nos trae la data y hacemos destructuring
       const { ultimoguardado, diaHoy, lastTickets } = await getData(dbPath);
       //Comparamos el día traido de la DB con el día de hoy
       if (hoy === diaHoy) {
@@ -87,12 +88,10 @@ const ticketControl = () => {
     return `Ticket ${newTicket.numero}`;
   };
 
-  //Quién atenderá los tickets
+  //Quién atenderá los tickets -> Sacaremos el ticket más antiguo de allTickets y lo introduciremos el primero de lastTickets
   const atenderTicket = async (escritorio) => {
     try {
-      const { ultimoguardado, diaHoy, allTickets, lastTickets } = await getData(
-        dbPath
-      );
+      const { ultimoguardado, allTickets, lastTickets } = await getData(dbPath);
       //No tenemos tickets
       if (allTickets.length === 0) {
         return null;
@@ -126,6 +125,7 @@ const ticketControl = () => {
     siguiente,
     atenderTicket,
     guardarenDB,
+    getData,
   };
 };
 

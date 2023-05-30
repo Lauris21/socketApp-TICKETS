@@ -40,6 +40,7 @@ btnAtender.addEventListener('click', () => {
     console.log(ok, ticket, msg);
     //Si respuesta no es ok
     if (!ok) {
+      //Ya no hay más tickets
       etiquetaTicket.innerText = 'Nadie';
       //Mostramos el div de alerta
       return (divAlerta.style.display = '');
