@@ -19,6 +19,8 @@ const etiquetaTicket = document.querySelector('small');
 const divAlerta = document.querySelector('.alert');
 const ticketsPendientes = document.getElementById('lblPendientes');
 
+//Pintamos el escritorio en el h1
+h1.innerText = `Escritorio ${escritorio}`;
 //Ocultamos el div de alerta
 divAlerta.style.display = 'none';
 

@@ -1,4 +1,4 @@
-App expendedora de tikets que se muestran en otra pantalla y se asignan a un mostrador
+App expendedora de tikets, los cuales se muestran en otra pantalla y se asignan a un mostrador
 Por ejemplo la cola de un banco
 
 npm init -y
